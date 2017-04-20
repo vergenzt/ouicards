@@ -33,7 +33,7 @@
         bigInterval   = Math.ceil(ouicards.flashcards.length / 3) + 1,
         smallInterval = Math.ceil(ouicards.flashcards.length / 6) + 1;
 
-    // Show an answer from bucket C once every bigInterval 
+    // Show an answer from bucket C once every bigInterval
     // So long as Bucket C it's not empty
     if (ouicards.counter % bigInterval === 0 && ouicards.bucketC.length !== 0) {
       newQuestion = getQuestion(ouicards.bucketC);
@@ -89,12 +89,30 @@
     toBucket.push(fromBucket.shift());
   }
 
+  // http://stackoverflow.com/a/6274381/718180
+  /**
+   * Shuffles array in place.
+   * @param {Array} a items The array containing the items.
+   */
+  function shuffle(a) {
+      var j, x, i;
+      for (i = a.length; i; i--) {
+          j = Math.floor(Math.random() * i);
+          x = a[i - 1];
+          a[i - 1] = a[j];
+          a[j] = x;
+      }
+  }
+
   function getQuestion(bucket) {
     // Prevent from looping thru an empty bucket
     if (!bucket || bucket.length === 0) {
       console.log("You can't load an empty set of questions.");
       return;
     }
+
+    // randomize the order each time
+    shuffle(bucket);
 
     return buildQuestionHTML(bucket[0]);
   }
@@ -169,13 +187,13 @@
 
   $.fn.ouicards = function() {
     var result = [];
-    this.find('ul').hide().children().each(function() {
+    this.find('.flashcard-list').hide().find('.flashcard').each(function() {
       result.push({
-        question: $(this).find('.question').text(),
-        answer: $(this).find('.answer').text()
+        question: $(this).find('.question').html(),
+        answer: $(this).find('.answer').html()
       });
     });
-    
+
     loadFromArray(result);
 
     $('a#correct').click(function(event) {
